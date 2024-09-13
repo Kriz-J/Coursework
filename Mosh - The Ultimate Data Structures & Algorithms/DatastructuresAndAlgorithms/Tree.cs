@@ -1,4 +1,5 @@
-﻿using System.Threading.Channels;
+﻿using System.Diagnostics;
+using System.Threading.Channels;
 
 namespace DataStructuresAndAlgorithms;
 
@@ -71,71 +72,152 @@ public class Tree
         return false;
     }
 
-    public void TraversePreOrder()
+    public bool Equal(Tree other)
     {
-        TraversePreOrder(Root);
-    }
-
-    public void TraverseInOrderAsc()
-    {
-        TraverseInOrderAsc(Root);
-    }
-
-    public void TraverseInOrderDesc()
-    {
-        TraverseInOrderDesc(Root);
-    }
-
-    public void TraversePostOrder()
-    {
-        TraversePostOrder(Root);
-    }
-
-    private static void TraversePreOrder(Node? root)
-    {
-        if (root is null)
+        if (Root is null)
         {
-            return;
+            throw new InvalidOperationException("Tree is empty.");
         }
 
-        Console.WriteLine(root.Value);
-        TraversePreOrder(root.LeftChild);
-        TraversePreOrder(root.RightChild);
+        if (other.Root is null)
+        {
+            throw new InvalidOperationException("Comparing tree is empty.");
+        }
+
+        return Equals(Root, other.Root);
+    }
+
+    public int Min() => Min(Root);
+
+    public int Height() => Height(Root);
+    
+    public void TraversePreOrder() => TraversePreOrder(Root);
+
+    public void TraverseInOrderAsc() => TraverseInOrderAsc(Root);
+
+    public void TraverseInOrderDesc() => TraverseInOrderDesc(Root);
+
+    public void TraversePostOrder() => TraversePostOrder(Root);
+
+    private static bool Equals(Node? node1, Node? node2)
+    {
+        if (node1 is null && node2 is null)
+        {
+            return true;
+        }
+        
+        if (node1 is null || node2 is null)
+        {
+            return false;
+        }
+
+        if (node1.Value != node2.Value)
+        {
+            return false;
+        }
+            
+        return Equals(node1.LeftChild, node2.LeftChild) && Equals(node1.RightChild, node2.RightChild);
     }
     
-    private static void TraverseInOrderAsc(Node? root)
+    private static int Min(Node? node)
     {
-        if (root is null)
+        if (node is null)
         {
-            return;
+            throw new InvalidOperationException("Tree is empty.");
         }
 
-        TraverseInOrderAsc(root.LeftChild);
-        Console.WriteLine(root.Value);
-        TraverseInOrderAsc(root.RightChild);
+        var current = node;
+        while (current.LeftChild is not null)
+        {
+            current = current.LeftChild;
+        }
+
+        return current.Value;
     }
 
-    private static void TraverseInOrderDesc(Node? root)
+    private static int MinGeneric(Node? node)
     {
-        if (root is null)
+        if (node is null)
         {
-            return;
+            throw new InvalidOperationException("Tree is empty.");
         }
 
-        TraverseInOrderDesc(root.RightChild);
-        Console.WriteLine(root.Value);
-        TraverseInOrderDesc(root.LeftChild);
+        var minValue = node.Value;
+        Console.WriteLine($"{node.Value}");
+
+        if (node.LeftChild is not null)
+        {
+            minValue = Math.Min(minValue, MinGeneric(node.LeftChild));
+        }
+        
+        if (node.RightChild is not null)
+        {
+            minValue = Math.Min(minValue, MinGeneric(node.RightChild));
+        }
+        
+        return minValue;
+    }
+    
+    private static int Height(Node? node)
+    {
+        if (node is null)
+        {
+            return -1;
+        }
+
+        return 1 + Math.Max(Height(node.LeftChild), Height(node.RightChild));
     }
 
-    private static void TraversePostOrder(Node? root)
+    private static void TraversePreOrder(Node? node)
     {
-        if (root is null)
+        if (node is null)
         {
             return;
         }
 
-        TraversePostOrder(root.LeftChild);
-        TraversePostOrder(root.RightChild);
-        Console.WriteLine(root.Value);
+        Console.WriteLine(node.Value);
+        TraversePreOrder(node.LeftChild);
+        TraversePreOrder(node.RightChild);
+    }
+    
+    private static void TraverseInOrderAsc(Node? node)
+    {
+        if (node is null)
+        {
+            return;
+        }
+
+        TraverseInOrderAsc(node.LeftChild);
+        Console.WriteLine(node.Value);
+        TraverseInOrderAsc(node.RightChild);
+    }
+
+    private static void TraverseInOrderDesc(Node? node)
+    {
+        if (node is null)
+        {
+            return;
+        }
+
+        TraverseInOrderDesc(node.RightChild);
+        Console.WriteLine(node.Value);
+        TraverseInOrderDesc(node.LeftChild);
+    }
+
+    private static void TraversePostOrder(Node? node)
+    {
+        if (node is null)
+        {
+            return;
+        }
+
+        TraversePostOrder(node.LeftChild);
+        TraversePostOrder(node.RightChild);
+        Console.WriteLine(node.Value);
+    }
+
+    private static bool NodeIsLeaf(Node node)
+    {
+        return node.LeftChild is null && node.RightChild is null;
     }
 }
