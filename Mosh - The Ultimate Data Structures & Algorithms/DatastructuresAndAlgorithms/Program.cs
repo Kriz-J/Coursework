@@ -1,16 +1,17 @@
 ﻿using My = DataStructuresAndAlgorithms;
 
 var tree = new My.Tree();
+tree.Insert(7);
+tree.Insert(4);
+tree.Insert(9);
 tree.Insert(1);
-tree.Insert(2);
-tree.Insert(3);
-//tree.Insert(7);
-//tree.Insert(4);
-//tree.Insert(9);
-//tree.Insert(1);
-//tree.Insert(6);
-//tree.Insert(8);
-//tree.Insert(10);
+tree.Insert(6);
+tree.Insert(8);
+tree.Insert(10);
+var temp = tree.GetNodesAtDistance(2);
+Console.WriteLine(tree.IsBinarySearchTree());
+
+
 
 var tree2 = new My.Tree();
 tree2.Insert(1);
