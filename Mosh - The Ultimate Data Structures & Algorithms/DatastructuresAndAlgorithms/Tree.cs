@@ -52,8 +52,13 @@ public class Tree
         }
     }
 
-    public bool Contains(int value)
+    public bool Find(int value)
     {
+        if (Root is null)
+        {
+            throw new InvalidOperationException("Tree is empty.");
+        }
+
         var current = Root;
 
         while (current is not null)
@@ -67,6 +72,30 @@ public class Tree
         }
 
         return false;
+    }
+
+    public void TraverseLevelOrder()
+    {
+        if (Root is null)
+        {
+            throw new InvalidOperationException("Tree is empty.");
+        }
+
+        var queue = new Queue<Node>(new[] { Root });
+
+        while (queue.Count > 0)
+        {
+            var node = queue.Dequeue();
+            Console.WriteLine(node.Value);
+            if (node.LeftChild is not null)
+            {
+                queue.Enqueue(node.LeftChild);
+            }
+            if (node.RightChild is not null)
+            {
+                queue.Enqueue(node.RightChild);
+            }
+        }
     }
 
     public List<int> GetNodesAtDistance(int distance)
@@ -84,7 +113,7 @@ public class Tree
         var list = new List<int>();
 
         GetNodesAtDistance(Root, distance, list);
-        
+
         return list;
     }
 
@@ -173,6 +202,53 @@ public class Tree
         TraversePostOrder(Root);
     }
 
+    public int Size() => Size(Root);
+
+    public int CountLeaves() => CountLeaves(Root);
+
+    public int MaxGeneric()
+    {
+        if (Root is null)
+        {
+            throw new InvalidOperationException("Tree is empty.");
+        }
+
+        return MaxGeneric(Root);
+    }
+
+    public bool Contains(int value)
+    {
+        if (Root is null)
+        {
+            throw new InvalidOperationException("Tree is empty.");
+        }
+
+        return Contains(Root, value);
+    }
+
+    public bool AreSiblings(int value1, int value2)
+    {
+        if (Root is null)
+        {
+            throw new InvalidOperationException("Tree is empty.");
+        }
+
+        return AreSiblings(Root, value1, value2);
+    }
+
+    public IList<Node> GetAncestors(int value)
+    {
+        if (Root is null)
+        {
+            throw new InvalidOperationException("Tree is empty.");
+        }
+
+        var ancestors = new List<Node>();
+        GetAncestors(Root, value, ancestors);
+
+        return ancestors;
+    }
+
     private static void GetNodesAtDistance(Node? node, int distance, ICollection<int> list)
     {
         if (node is null)
@@ -225,10 +301,10 @@ public class Tree
         return Equals(node1.LeftChild, node2.LeftChild) && Equals(node1.RightChild, node2.RightChild);
     }
 
-    private static int Min(Node? node)
+    private static int Min(Node node)
     {
         var current = node;
-        while (current!.LeftChild is not null)
+        while (current.LeftChild is not null)
         {
             current = current.LeftChild;
         }
@@ -236,9 +312,9 @@ public class Tree
         return current.Value;
     }
 
-    private static int MinGeneric(Node? node)
+    private static int MinGeneric(Node node)
     {
-        var minValue = node!.Value;
+        var minValue = node.Value;
 
         if (node.LeftChild is not null)
         {
@@ -309,5 +385,112 @@ public class Tree
         TraversePostOrder(node.LeftChild);
         TraversePostOrder(node.RightChild);
         Console.WriteLine(node.Value);
+    }
+
+    private static int Size(Node? node) //Implementing a property is better.
+    {
+        if (node is null)
+        {
+            return 0;
+        }
+
+        return 1 + Size(node.LeftChild) + Size(node.RightChild);
+    }
+
+    private static int CountLeaves(Node? node)
+    {
+        if (node is null)
+        {
+            return 0;
+        }
+
+        if (node.LeftChild is null && node.RightChild is null)
+        {
+            return 1;
+        }
+
+        return CountLeaves(node.LeftChild) + CountLeaves(node.RightChild);
+    }
+
+    private static int Max(Node node)
+    {
+        if (node.RightChild is null)
+        {
+            return node.Value;
+        }
+
+        return Max(node.RightChild);
+    }
+
+    private static int MaxGeneric(Node node)
+    {
+        var maxValue = node.Value;
+
+        if (node.LeftChild is not null)
+        {
+            maxValue = Math.Max(maxValue, MaxGeneric(node.LeftChild));
+        }
+        if (node.RightChild is not null)
+        {
+            maxValue = Math.Max(maxValue, MaxGeneric(node.RightChild));
+        }
+
+        return maxValue;
+    }
+
+    private static bool Contains(Node? node, int value)
+    {
+        if (node is null)
+        {
+            return false;
+        }
+
+        if (node.Value == value)
+        {
+            return true;
+        }
+
+        return Contains(node.LeftChild, value) || Contains(node.RightChild, value);
+    }
+
+    private static bool AreSiblings(Node? node, int value1, int value2)
+    {
+        if (node is null)
+        {
+            return false;
+        }
+
+        if (node.LeftChild is not null && node.RightChild is not null)
+        {
+            if (node.LeftChild.Value == value1 && node.RightChild.Value == value2 ||
+                node.LeftChild.Value == value2 && node.RightChild.Value == value1)
+            {
+                return true;
+            }
+        }
+
+        return AreSiblings(node.LeftChild, value1, value2) || AreSiblings(node.RightChild, value1, value2);
+    }
+
+    private static bool GetAncestors(Node node, int value, ICollection<Node> ancestors)
+    {
+        if (node.Value == value)
+        {
+            return true;
+        }
+        
+        if (node.LeftChild is not null && GetAncestors(node.LeftChild, value, ancestors))
+        {
+            ancestors.Add(node);
+            return true;
+        }
+
+        if (node.RightChild is not null && GetAncestors(node.RightChild, value, ancestors))
+        {
+            ancestors.Add(node);
+            return true;
+        }
+
+        return false;
     }
 }

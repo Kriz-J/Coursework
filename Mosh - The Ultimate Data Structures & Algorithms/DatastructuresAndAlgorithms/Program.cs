@@ -8,9 +8,13 @@ tree.Insert(1);
 tree.Insert(6);
 tree.Insert(8);
 tree.Insert(10);
-var temp = tree.GetNodesAtDistance(2);
-Console.WriteLine(tree.IsBinarySearchTree());
-
+var test1 = tree.GetAncestors(7);
+var test2 = tree.GetAncestors(4);
+var test3 = tree.GetAncestors(9);
+var test4 = tree.GetAncestors(1);
+var test5 = tree.GetAncestors(6);
+var test6 = tree.GetAncestors(8);
+var test7 = tree.GetAncestors(10);
 
 
 var tree2 = new My.Tree();
